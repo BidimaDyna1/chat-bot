@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* CSS pour styliser la fenêtre de chat */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chatbot-container {
+            width: 360px;
+            height: 500px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .chat-log {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+
+        .user-message {
+            background-color: #007bff; /* Bleu pour l'utilisateur */
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background-color: #e9e9eb; /* Gris clair pour le bot */
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-form-container {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        #chat-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+            font-size: 1em;
+        }
+
+        #chat-input:focus {
+            border-color: #007bff;
+        }
+
+        #chat-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- DANS VOTRE FICHIER chatbot/templates/chatbot/chatbot_window.html -->
+
+<!-- ... votre structure existante ... -->
+
+<div id="chat-input-container">
+    <!-- Le bouton pour joindre une image -->
+    <label for="image-upload-input" class="upload-btn">📎</label>
+    <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+    
+    <!-- Votre champ de texte -->
+    <input type="text" id="user-input" placeholder="Posez une question...">
+    
+    <!-- Votre bouton d'envoi -->
+    <button id="send-button">Envoyer</button>
+</div>
+
+<!-- Ajout d'une zone pour prévisualiser l'image sélectionnée -->
+<div id="image-preview-container" style="display: none;">
+    <img id="image-preview" src="#" alt="Image sélectionnée">
+    <button id="remove-image-btn">X</button>
+</div>
+
+<!-- ... le reste de votre HTML ... -->
+
+    <!-- 1. La structure HTML de la fenêtre de chat -->
+    <div class="chatbot-container">
+        
+        <!-- Zone où les messages s'affichent -->
+        <div id="chat-log" class="chat-log">
+            <div class="message bot-message">
+                Bonjour ! Comment puis-je vous aider aujourd'hui ?
+            </div>
+        </div>
+
+        <!-- Formulaire pour envoyer un message -->
+        <div class="chat-form-container">
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="Écrivez votre message..." autocomplete="off">
+                <button type="submit">➤</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- 2. Le JavaScript qui fait fonctionner le chat -->
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const chatLog = document.getElementById('chat-log');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+
+        // L'URL de notre API, générée dynamiquement et de manière sécurisée par Django
+        const apiUrl = "{% url 'chatbot:process_message' %}";
+
+        chatForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userInput = chatInput.value.trim();
+
+            if (userInput) {
+                addMessage(userInput, 'user-message');
+                chatInput.value = '';
+
+                // ---- ANCIEN CODE À SUPPRIMER ----
+                /*
+                setTimeout(function() {
+                    const botResponse = "Je traite votre demande : '" + userInput + "'. Pour le moment, je suis un bot de démonstration.";
+                    addMessage(botResponse, 'bot-message');
+                }, 1000); 
+                */
+
+                // ---- NOUVEAU CODE AVEC FETCH ----
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: userInput })
+                })
+                .then(response => response.json()) // On convertit la réponse en JSON
+                .then(data => {
+                    // On ajoute la réponse du bot (contenue dans data.response) au chat
+                    addMessage(data.response, 'bot-message');
+                })
+                .catch(error => {
+                    // En cas d'erreur réseau ou autre
+                    console.error('Erreur lors de l\'appel à l\'API:', error);
+                    addMessage('Désolé, une erreur technique est survenue. Veuillez réessayer plus tard.', 'bot-message');
+                });
+            }
+        });
+
+        function addMessage(text, className) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', className);
+            messageElement.textContent = text;
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot CARIMO</title>
+    <style>
+        /* Style pour que le chat remplisse son conteneur (l'iframe) */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 100%; /* Prend toute la largeur de l'iframe */
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            background-color: white;
+        }
+        .chat-box {
+            flex-grow: 1; /* Prend tout l'espace vertical disponible */
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+        }
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+        }
+        .chat-input input {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 10px;
+        }
+        .chat-input button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .message { margin-bottom: 15px; }
+        .user-message { text-align: right; }
+        .bot-message { text-align: left; }
+        .message p { display: inline-block; padding: 10px; border-radius: 15px; max-width: 80%; }
+        .user-message p { background-color: #007bff; color: white; }
+        .bot-message p { background-color: #e9e9eb; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <div class="message bot-message">
+                <p>Bonjour ! Je suis l'assistant virtuel de CARIMO EMPIRE. Comment puis-je vous aider ?</p>
+            </div>
+        </div>
+        <form class="chat-input" id="chat-form">
+            <input type="text" id="user-input" placeholder="Tapez votre message...">
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+
+    <script>
+        // LE CODE JAVASCRIPT NE CHANGE PAS DU TOUT
+        // ... collez ici le même script que vous aviez avant pour gérer la conversation ...
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatBox = document.getElementById('chat-box');
+        const apiUrl = '/chat/api/';
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userMessage = userInput.value.trim();
+            if (userMessage === '') return;
+
+            appendMessage(userMessage, 'user');
+            userInput.value = '';
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                appendMessage("Désolé, une erreur s'est produite.", 'bot');
+            });
+        });
+
+        function appendMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            const messageP = document.createElement('p');
+            messageP.textContent = message;
+            messageDiv.appendChild(messageP);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

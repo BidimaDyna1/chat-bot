@@ -1,0 +1,69 @@
+{
+  "entreprise": {
+    "nom": "CARIMO EMPIRE",
+    "description": "CARIMO EMPIRE est un groupe leader composé de trois branches d'excellence : Cosmétiques, Immobilier et Haute Couture.",
+    "horaires": "Nos bureaux sont ouverts de 9h à 18h, du lundi au vendredi.",
+    "contact": "Vous pouvez nous contacter au +237 6 XX XX XX XX ou par email à contact@carimoempire.com."
+  },
+  "branches": {
+    "cosmetics": {
+      "nom": "CARIMO Cosmetics",
+      "mots_cles": ["cosmétique", "cosmetique", "maquillage", "crème", "soin", "beauté", "parfum", "sérum", "huile", "teint"],
+      "description": "CARIMO Cosmetics vous offre une gamme de produits de beauté de luxe, conçus pour sublimer votre beauté naturelle. Quelle gamme vous intéresse ?",
+      "gammes": [
+        {
+          "nom": "CARIMO Teint Nature",
+          "mots_cles": ["nature", "teint nature"],
+          "description": "La gamme Teint Nature est conçue pour unifier votre teint tout en gardant un aspect naturel et frais.",
+          "produits": [
+            { "nom": "Lait Teint Nature", "prix": "30€" },
+            { "nom": "Savon Teint Nature", "prix": "10€" }
+          ]
+        },
+        {
+          "nom": "CARIMO Teint Éclat",
+          "mots_cles": ["éclat", "eclat", "teint eclat"],
+          "description": "La gamme Teint Éclat est parfaite pour illuminer votre peau et lui donner un glow spectaculaire.",
+          "produits": [
+            { "nom": "Sérum Éclat", "prix": "45€" },
+            { "nom": "Crème de jour Éclat", "prix": "40€" }
+          ]
+        },
+        {
+          "nom": "CARIMO Teint Métisse",
+          "mots_cles": ["métisse", "metisse", "teint metisse"],
+          "description": "Spécialement formulée pour les peaux métissées, cette gamme sublime et unifie le teint.",
+          "produits": [
+            { "nom": "Lait Corporel Métisse", "prix": "35€" },
+            { "nom": "Huile Sèche Métisse", "prix": "25€" }
+          ]
+        },
+        {
+          "nom": "CARIMO Huile Peau Velours",
+          "mots_cles": ["huile", "velours", "peau velours"],
+          "description": "Une huile précieuse qui nourrit, adoucit et parfume délicatement votre peau.",
+          "produits": []
+        },
+        {
+          "nom": "CARIMO Gluthatione",
+          "mots_cles": ["gluthatione", "blanchissant", "éclaircissant"],
+          "description": "Une gamme éclaircissante pour un teint visiblement plus clair et unifié.",
+          "produits": [
+            { "nom": "Gélules Gluthatione", "prix": "90€" },
+            { "nom": "Savon Gluthatione", "prix": "15€" }
+          ]
+        }
+      ]
+    },
+    "immobilier": {
+      "nom": "CARIMO Immobilier",
+      "mots_cles": ["immobilier", "appartement", "maison", "location", "vente", "terrain"],
+      "description": "CARIMO Immobilier vous accompagne dans vos projets d'achat, de vente ou de location de biens de prestige."
+    },
+    "haute_couture": {
+      "nom": "CARIMO Haute Couture",
+      "mots_cles": ["couture", "robe", "costume", "mode", "styliste", "sur mesure"],
+      "description": "L'élégance et le savoir-faire se rencontrent chez CARIMO Haute Couture pour des créations uniques et sur mesure."
+    }
+  }
+}

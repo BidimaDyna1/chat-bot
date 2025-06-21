@@ -1,0 +1,167 @@
+{% load static %}
+<!-- Fichier : chatbot/templates/chatbot/accueil.html (Version corrigée et simplifiée) -->
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CARIMO EMPIRE - Accueil</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            line-height: 1.6; 
+            margin: 40px; 
+            background-color: #f4f7f6;
+        }
+        h1 { color: #2c3e50; }
+        p { color: #34495e; }
+
+        /* Style de la bulle de chat */
+        #chat-bubble {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+        #chat-bubble:hover {
+            transform: scale(1.1);
+        }
+
+        /* Style du conteneur du widget (fenêtre de chat) */
+        #chat-widget-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 370px;
+            height: 510px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            display: none; /* Caché par défaut */
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        /* Classe pour afficher le widget */
+        #chat-widget-container.open {
+            display: flex;
+        }
+        
+        /* L'iframe doit prendre toute la place dans son conteneur */
+        #chat-widget-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+ <!-- Lier notre fichier de style CSS -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+<body>
+    <header class="hero-section">
+    <h1>Bienvenue sur le site de CARIMO EMPIRE</h1>
+    <p>Découvrez nos branches d'excellence : Cosmétiques, Immobilier et Haute Couture.</p>
+    <p>N'hésitez pas à utiliser notre assistant virtuel en bas à droite de l'écran pour toute question !</p>
+    </header>
+    <!-- 1. LES ÉLÉMENTS HTML DU WIDGET -->
+          <main class="content-wrapper">
+
+        <!-- Section du carrousel de produits -->
+        <section class="content-section carousel-section">
+            <h2>Découvrez nos Produits</h2>
+            <div class="product-carousel">
+                <div class="carousel-container">
+                    <!-- Ajoutez autant de slides que de produits -->
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/gammeeclat.png' %}" alt="Produit 1">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/gammemetisse.png' %}" alt="Produit 2">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/gammenature.png' %}" alt="Produit 3">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/gluthatione.png' %}" alt="Produit 4">
+                    </div>
+                </div>
+                <button class="carousel-btn prev-btn"><</button>
+                <button class="carousel-btn next-btn">></button>
+            </div>
+        </section>
+
+        <!-- Section de description de l'entreprise -->
+        <section class="content-section about-section">
+            <h2>Notre Histoire</h2>
+            <p>
+                Fondée en [année], [Nom de votre entreprise] s'est donné pour mission de [votre mission]. 
+                Nous croyons en [vos valeurs, ex: l'innovation, la qualité et la satisfaction client]. 
+                Notre parcours est marqué par une croissance constante et un engagement indéfectible envers nos clients.
+            </p>
+        </section>
+
+        <!-- Section de la PDG -->
+        <section class="content-section ceo-section">
+            <h2>Un Mot de notre PDG</h2>
+            <div class="ceo-card">
+                <img src="{% static 'images/pdg.jpg' %}" alt="Photo de la PDG">
+                <div class="ceo-text">
+                    <h3>CARINE MONGOUE, PDG</h3>
+                    <p>
+                        "Depuis le premier jour, notre vision a été de . 
+                        Je suis incroyablement fière de l'équipe que nous avons bâtie et du travail que nous accomplissons chaque jour 
+                        pour vous servir."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Lier notre fichier JavaScript juste avant la fin du body -->
+    <script src="{% static 'script.js' %}"></script>
+
+    <!-- La bulle sur laquelle l'utilisateur clique -->
+    <div id="chat-bubble">💬</div>
+
+    <!-- Le conteneur qui contient l'iframe du chat -->
+    <div id="chat-widget-container">
+        <!-- 
+            L'iframe est déjà ici, avec la bonne URL générée par Django.
+            Pas besoin de la créer avec JavaScript !
+        -->
+        <iframe src="{% url 'chatbot:chatbot_window' %}"></iframe> 
+    </div>
+
+    <!-- 2. LE SEUL SCRIPT NÉCESSAIRE SUR CETTE PAGE -->
+    <script>
+        // Attend que la page soit complètement chargée
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Récupère les deux éléments importants
+            const chatBubble = document.getElementById('chat-bubble');
+            const chatContainer = document.getElementById('chat-widget-container');
+
+            // Ajoute un écouteur de clic sur la bulle
+            chatBubble.addEventListener('click', function() {
+                // Ajoute ou enlève la classe 'open' pour afficher ou cacher le widget
+                chatContainer.classList.toggle('open');
+            });
+        });
+    </script>
+
+</body>
+</html>
