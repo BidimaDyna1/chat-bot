@@ -52,12 +52,9 @@ async function sendMessage() {
     // ... (votre code existant pour ajouter le message au chat) ...
 
     try {
-        const response = await fetch("{% url 'chatbot:process_message' %}", {
+        const response = await fetch('/chat/api/', {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}', // Important !
-            },
-            body: formData, // On envoie l'objet FormData
+            body: formData
         });
 
         const data = await response.json();
