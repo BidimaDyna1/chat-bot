@@ -45,6 +45,13 @@
             line-height: 1.4;
         }
 
+        .message img {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-top: 5px;
+            display: block;
+        }
+
         .user-message {
             background-color: #007bff; /* Bleu pour l'utilisateur */
             color: white;
@@ -64,10 +71,11 @@
             padding: 10px;
             background-color: #f9f9f9;
         }
-        
+
         #chat-form {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         #chat-input {
@@ -95,6 +103,40 @@
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        .upload-btn {
+            font-size: 1.2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        #image-preview-container {
+            padding: 10px;
+            position: relative;
+            width: 100px;
+            display: none;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        #remove-image-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -151,51 +193,80 @@
         const chatLog = document.getElementById('chat-log');
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-input');
+        const imageInput = document.getElementById('image-upload-input');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const removeImageBtn = document.getElementById('remove-image-btn');
 
         // L'URL de notre API, générée dynamiquement et de manière sécurisée par Django
         const apiUrl = "{% url 'chatbot:process_message' %}";
 
-        chatForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const userInput = chatInput.value.trim();
-
-            if (userInput) {
-                addMessage(userInput, 'user-message');
-                chatInput.value = '';
-
-                // ---- ANCIEN CODE À SUPPRIMER ----
-                /*
-                setTimeout(function() {
-                    const botResponse = "Je traite votre demande : '" + userInput + "'. Pour le moment, je suis un bot de démonstration.";
-                    addMessage(botResponse, 'bot-message');
-                }, 1000); 
-                */
-
-                // ---- NOUVEAU CODE AVEC FETCH ----
-                fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message: userInput })
-                })
-                .then(response => response.json()) // On convertit la réponse en JSON
-                .then(data => {
-                    // On ajoute la réponse du bot (contenue dans data.response) au chat
-                    addMessage(data.response, 'bot-message');
-                })
-                .catch(error => {
-                    // En cas d'erreur réseau ou autre
-                    console.error('Erreur lors de l\'appel à l\'API:', error);
-                    addMessage('Désolé, une erreur technique est survenue. Veuillez réessayer plus tard.', 'bot-message');
-                });
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
             }
         });
 
-        function addMessage(text, className) {
+        removeImageBtn.addEventListener('click', function () {
+            imageInput.value = '';
+            imagePreviewContainer.style.display = 'none';
+        });
+
+        chatForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const userInput = chatInput.value.trim();
+            const imageFile = imageInput.files[0];
+
+            if (!userInput && !imageFile) {
+                return;
+            }
+
+            addMessage(userInput, 'user-message', imagePreview.src && imageFile ? imagePreview.src : null);
+
+            const formData = new FormData();
+            formData.append('message', userInput);
+            if (imageFile) {
+                formData.append('image_file', imageFile);
+            }
+
+            chatInput.value = '';
+            imageInput.value = '';
+            imagePreviewContainer.style.display = 'none';
+
+            fetch(apiUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.response, 'bot-message');
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'appel à l\'API:', error);
+                addMessage("Désolé, une erreur technique est survenue.", 'bot-message');
+            });
+        });
+
+        function addMessage(text, className, imageSrc = null) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('message', className);
-            messageElement.textContent = text;
+            if (text) {
+                const textNode = document.createElement('p');
+                textNode.textContent = text;
+                messageElement.appendChild(textNode);
+            }
+            if (imageSrc) {
+                const img = document.createElement('img');
+                img.src = imageSrc;
+                messageElement.appendChild(img);
+            }
             chatLog.appendChild(messageElement);
             chatLog.scrollTop = chatLog.scrollHeight;
         }
